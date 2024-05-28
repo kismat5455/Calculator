@@ -12,7 +12,7 @@ Key Features:
 Technologies:
 
     HTML: Structure of the calculator layout.
-    CSS: Styling for the appearance and responsiveness.
+    CSS: Styling for the appearance.
     JavaScript: Logic for handling calculations and user interactions.
 
 Installation/Usage:
