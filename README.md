@@ -8,9 +8,7 @@ Key Features:
     Performs basic arithmetic operations (addition, subtraction, multiplication, division).
     Handles decimal numbers and chaining operations.
     Includes a clear button and a functional display.
-    Implements keyboard support for input.
-    Responsive design for various screen sizes.
-
+    
 Technologies:
 
     HTML: Structure of the calculator layout.
