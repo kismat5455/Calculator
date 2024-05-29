@@ -14,8 +14,10 @@ document.addEventListener("keydown", function (event) {
     const key = event.key;
     const validKeys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "+", "-", "*", "/", "Enter", "Backspace", "Delete", "(", ")"];
 
+    
     if (validKeys.includes(key)) {
         if (key === "Enter") {
+          
             handleInput("=");
         } else if (key === "Backspace" || key === "Delete") {
             handleInput("Del");
@@ -30,19 +32,22 @@ function handleInput(value) {
     let display = document.getElementById("inputField");
 
     if (value === "Clear") {
+       
         clearDisplay(display);
-    } else if (value === "Del") {
-        deleteLastEntry(display);
     } else if (display.value !== "Error") {
-        handleButtonClick(value, display);
+        if (value === "Del") {
+            deleteLastEntry(display);
+        } else {
+            handleButtonClick(value, display);
+        }
     }
 }
 
-// Function to clear the display and reset variables
+// Function to clear the display
 function clearDisplay(display) {
     display.value = "0";
-    expression = "";
-    shouldResetDisplay = false;
+    expression = "";       // Reset the expression
+    shouldResetDisplay = false; // Reset the flag
 }
 
 // Function to handle button clicks
@@ -182,16 +187,21 @@ function evaluatePostfix(postfix) {
 // Function to handle equals button click
 function handleEqualsClick(display) {
     let result = evaluateExpression(expression);
-    display.value = result;
-    expression = result.toString();
-    shouldResetDisplay = true;
+    if (!isNaN(result)) {
+        display.value = result;
+        expression = result.toString();
+        shouldResetDisplay = true;
+    } else {
+        display.value = "Error";
+        expression = "";
+    }
 }
 
 // Function to delete the last character
 function deleteLastEntry(display) {
     if (expression.length > 0) {
         expression = expression.slice(0, -1);
-        display.value = expression || "0"; // Display "0" if expression is empty
+        display.value = expression || "0";
     }
 }
 
@@ -207,11 +217,11 @@ function isNumber(value) {
 
 // Function to update the expression display
 function updateExpression(value, display) {
-    if (value === "=") {
-        // Don't add "=" to the expression
+    if (value === "=" || value === "Clear" || value === "Del") {
         return;
-    } else if (value === "Clear") {
-        expression = ""; // Clear the expression
+    } else if (shouldResetDisplay && isNumber(value)) {
+        expression = value;
+        shouldResetDisplay = false;
     } else {
         expression += value;
     }
