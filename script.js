@@ -1,168 +1,225 @@
+// Variables to store the full expression and display reset flag
+let expression = "";//store the expression
+let shouldResetDisplay = false;//flag to reset the display
 
-//variables to store the values and operators
-let variableOne = null;
-let variableTwo = null;
-let operator = null;
-let count = 1;
-//a function that returns the number that is clicked on the calculator
-let buttonClicked = document.getElementById("calculatorContainer");
-buttonClicked.addEventListener("click", function (event) {
-
+// Event listener for button clicks
+document.getElementById("calculatorContainer").addEventListener("click", function (event) {
     if (event.target.tagName === "BUTTON") {
-
-        value = event.target.textContent;
-
-
-
-
-
-        let display = document.getElementById("inputField");
-
-
-        //if the user  clicks on the clear button, the display value is set to 0 and the variables are set to null  
-
-
-        if (value === "Clear") {
-            display.value = "0";
-            clearDisplay();
-        } else if (display.value !== "Error") {
-
-            if (isVariableOneSet(variableOne) && isNumber(value)) {
-                setDisplayValue(display, value);
-            } else if (isOperatorSet(operator)) {
-                if (isVariableOneSet(variableOne)) {
-                    setVariableOne(display, convertToNumber(display.value));
-                }
-                setDisplayValue(display, value);
-                setOperatorValue(value);
-            } else if (value !== "=" && !isNumber(value) && isOperator(value)) {
-                setDisplayValue(display, value);
-            } else if (value !== "=" && isNumber(value)) {
-                if (count === 1) {
-                    display.value = "";
-                    count++;
-                }
-                setDisplayValue(display, value);
-            }
-            else {
-
-
-                variableTwo = convertToNumber(display.value);
-
-                if (operationPossible(variableOne, variableTwo, operator)) {
-                    calculate(display, variableOne, variableTwo, operator);
-                } else {
-                    display.value = "Error";
-                }
-
-
-            }
-        }
-
-
+        handleInput(event.target.textContent);
     }
-
 });
 
+// Event listener for keyboard input
+document.addEventListener("keydown", function (event) {
+    const key = event.key;
+    const validKeys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "+", "-", "*", "/", "Enter", "Backspace", "Delete", "(", ")"];
 
+    if (validKeys.includes(key)) {
+        if (key === "Enter") {
+            handleInput("=");
+        } else if (key === "Backspace" || key === "Delete") {
+            handleInput("Del");
+        } else {
+            handleInput(key);
+        }
+    }
+});
 
-//a function that clears the display and sets the variables to null
-function clearDisplay(){
+// Function to handle input (both button clicks and keyboard)
+function handleInput(value) {
+    let display = document.getElementById("inputField");
 
-    variableOne = null;
-    variableTwo = null;
-    operator = null;
-    count = 1;
+    if (value === "Clear") {
+        clearDisplay(display);
+    } else if (value === "Del") {
+        deleteLastEntry(display);
+    } else if (display.value !== "Error") {
+        handleButtonClick(value, display);
+    }
 }
 
-//function that check if we are allowed to set  variable1
-function isVariableOneSet(variableOne) {
-    return variableOne === null;
+// Function to clear the display and reset variables
+function clearDisplay(display) {
+    display.value = "0";
+    expression = "";
+    shouldResetDisplay = false;
 }
 
-
-//function that checks if the first display value is zero and replaces it with the value clicked
-function isDisplayValueZero(display) {
-    return display.value === "0";
+// Function to handle button clicks
+function handleButtonClick(value, display) {
+    if (isNumber(value) || value === ".") {
+        handleNumberClick(value, display);
+    } else if (isOperator(value)) {
+        handleOperatorClick(value, display);
+    } else if (value === "=") {
+        handleEqualsClick(display);
+    }
+    updateExpression(value, display);
 }
 
-//function that sets the display value to the value clicked
-function setDisplayValue(display, value) {
-
-    if (isDisplayValueZero(display) || (isOperator(value) && isOperatorSet(operator))) {
+// Function to handle number button clicks
+function handleNumberClick(value, display) {
+    if (shouldResetDisplay) {
         display.value = value;
-        // operator = "2222";//this is a dummy value to prevent the operator from being set and resulying in error
+        shouldResetDisplay = false;
     } else {
         display.value += value;
     }
 }
 
-
-//function that checks if we are allowed to set the operator
-function isOperatorSet(operator) {
-    return operator === null;
-}
-
-//function that sets the first variable to the value clicked
-function setVariableOne(display, value) {
-    variableOne = value;
-}
-
-//function that sets the operator to the value clicked
-function setOperatorValue(value) {
-    operator = value;
-}
-
-
-
-//function that checks if the operation is possible
-function operationPossible(variableOne, variableTwo, operator) {
-    return (variableOne != null && isNumber(variableOne) && variableTwo != null && isNumber(variableTwo) && operator != null && isOperator(operator))
-}
-
-
-//a function that checks if the button clicked is a number or an operator given a string
-function isNumber(value) {
-    return !isNaN(parseInt(value));
-}
-
-//a function that calculates the result of the operation
-function calculate(display, value1, value2, operation) {
-    let result = null;
-    switch (operation) {
-        case "+":
-            result = value1 + value2;
-            break;
-        case "-":
-            result = value1 - value2;
-            break;
-        case "*":
-            result = value1 * value2;
-            break;
-        case "/":
-            result = value1 / value2;
-            break;
+// Function to handle operator button clicks
+function handleOperatorClick(value, display) {
+    if (shouldResetDisplay) {
+        display.value = value;
+        shouldResetDisplay = false;
+    } else {
+        display.value += value;
     }
+}
+
+// Custom function to evaluate mathematical expression
+function evaluateExpression(expression) {
+    try {
+        let tokens = tokenizeExpression(expression);
+        let postfix = infixToPostfix(tokens);
+        return evaluatePostfix(postfix);
+    } catch (error) {
+        return error.message;
+    }
+}
+
+// Function to tokenize the expression
+function tokenizeExpression(expression) {
+    let tokens = expression.match(/(\d+\.?\d*|\.\d+|[+\-*/()])/g);
+    if (!tokens) throw new Error("Invalid expression");
+    return tokens;
+}
+
+// Function to convert infix to postfix using the Shunting Yard algorithm
+function infixToPostfix(tokens) {
+    let outputQueue = [];
+    let operatorStack = [];
+
+    const precedence = {
+        "+": 1,
+        "-": 1,
+        "*": 2,
+        "/": 2
+    };
+
+    const associativity = {
+        "+": "L",
+        "-": "L",
+        "*": "L",
+        "/": "L"
+    };
+
+    tokens.forEach(token => {
+        if (isNumber(token)) {
+            outputQueue.push(parseFloat(token));
+        } else if (isOperator(token)) {
+            while (
+                operatorStack.length &&
+                isOperator(operatorStack[operatorStack.length - 1]) &&
+                ((associativity[token] === "L" && precedence[token] <= precedence[operatorStack[operatorStack.length - 1]]) ||
+                    (associativity[token] === "R" && precedence[token] < precedence[operatorStack[operatorStack.length - 1]]))
+            ) {
+                outputQueue.push(operatorStack.pop());
+            }
+            operatorStack.push(token);
+        } else if (token === "(") {
+            operatorStack.push(token);
+        } else if (token === ")") {
+            while (operatorStack.length && operatorStack[operatorStack.length - 1] !== "(") {
+                outputQueue.push(operatorStack.pop());
+            }
+            operatorStack.pop();
+        }
+    });
+
+    while (operatorStack.length) {
+        outputQueue.push(operatorStack.pop());
+    }
+
+    return outputQueue;
+}
+
+// Function to evaluate the postfix expression
+function evaluatePostfix(postfix) {
+    let resultStack = [];
+
+    postfix.forEach(token => {
+        if (isNumber(token)) {
+            resultStack.push(token);
+        } else if (isOperator(token)) {
+            let b = resultStack.pop();
+            let a = resultStack.pop();
+            let result;
+            switch (token) {
+                case "+":
+                    result = a + b;
+                    break;
+                case "-":
+                    result = a - b;
+                    break;
+                case "*":
+                    result = a * b;
+                    break;
+                case "/":
+                    if (b === 0) {
+                        throw new Error("you funny? Cannot divide by zero.");
+                    }
+                    result = a / b;
+                    break;
+            }
+            resultStack.push(result);
+        }
+    });
+
+    return resultStack[0];
+}
+
+// Function to handle equals button click
+function handleEqualsClick(display) {
+    let result = evaluateExpression(expression);
     display.value = result;
-    variableOne = result;
-    variableTwo = null;
-    operator = null;
-    count = 1;
+    expression = result.toString();
+    shouldResetDisplay = true;
 }
 
+// Function to delete the last character
+function deleteLastEntry(display) {
+    if (expression.length > 0) {
+        expression = expression.slice(0, -1);
+        display.value = expression || "0"; // Display "0" if expression is empty
+    }
+}
 
-//a function that checks if the argument is an operator
+// Function to check if the argument is an operator
 function isOperator(value) {
-    return value === "+" || value === "-" || value === "*" || value === "/";
+    return ["+", "-", "*", "/"].includes(value);
 }
 
-// a function that converts string to number
-function convertToNumber(value) {
-    return parseFloat(value);
+// Function to check if the argument is a number
+function isNumber(value) {
+    return !isNaN(value);
 }
 
+// Function to update the expression display
+function updateExpression(value, display) {
+    if (value === "=") {
+        // Don't add "=" to the expression
+        return;
+    } else if (value === "Clear") {
+        expression = ""; // Clear the expression
+    } else {
+        expression += value;
+    }
+    display.value = expression;
+}
 
-
-
-
-
+// Initial setup for the display
+document.addEventListener("DOMContentLoaded", function () {
+    let displayField = document.getElementById("inputField");
+    displayField.value = "0";
+});

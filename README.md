@@ -7,13 +7,15 @@ Key Features:
 
     Performs basic arithmetic operations (addition, subtraction, multiplication, division).
     Handles decimal numbers and chaining operations.
-    Includes a clear button and a functional display.
+    Includes a clear button and a functional display
+    Takes input from the keyboard.
     
 Technologies:
 
     HTML: Structure of the calculator layout.
-    CSS: Styling for the appearance.
+    CSS: Styling for the appearance and responsive.
     JavaScript: Logic for handling calculations and user interactions.
+
 
 Installation/Usage:
 
