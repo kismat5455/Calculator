@@ -19,3 +19,10 @@ Installation/Usage:
 
     Clone or download the repository.
     Open the index.html file in your web browser.
+
+    
+Live Preview:
+
+    https://kismat5455.github.io/Calculator/
+    
+    
