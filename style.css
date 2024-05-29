@@ -67,3 +67,10 @@ footer {
     color: #333;
     font-size: 14px;
 }
+
+@media only screen and (max-width: 600px) {
+    #calculatorContainer {
+        height: 80vh;
+
+    }
+}
