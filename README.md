@@ -21,8 +21,7 @@ Installation/Usage:
     Open the index.html file in your web browser.
 
     
-Live Preview:
-
-    https://kismat5455.github.io/Calculator/
+## Live Preview:
+ https://kismat5455.github.io/Calculator/
     
     
