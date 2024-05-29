@@ -23,7 +23,8 @@ buttonClicked.addEventListener("click", function (event) {
 
 
         if (value === "Clear") {
-            clearDisplay(display, variableOne, variableTwo, operator);
+            display.value = "0";
+            clearDisplay();
         } else if (display.value !== "Error") {
 
             if (isVariableOneSet(variableOne) && isNumber(value)) {
@@ -66,8 +67,8 @@ buttonClicked.addEventListener("click", function (event) {
 
 
 //a function that clears the display and sets the variables to null
-function clearDisplay(display, variableOne, variableTwo, operator) {
-    display.value = 0;
+function clearDisplay(){
+
     variableOne = null;
     variableTwo = null;
     operator = null;
