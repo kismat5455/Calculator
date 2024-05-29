@@ -14,10 +14,10 @@ document.addEventListener("keydown", function (event) {
     const key = event.key;
     const validKeys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "+", "-", "*", "/", "Enter", "Backspace", "Delete", "(", ")"];
 
-    
+
     if (validKeys.includes(key)) {
         if (key === "Enter") {
-          
+
             handleInput("=");
         } else if (key === "Backspace" || key === "Delete") {
             handleInput("Del");
@@ -32,7 +32,7 @@ function handleInput(value) {
     let display = document.getElementById("inputField");
 
     if (value === "Clear") {
-       
+
         clearDisplay(display);
     } else if (display.value !== "Error") {
         if (value === "Del") {
@@ -95,6 +95,13 @@ function evaluateExpression(expression) {
 
 // Function to tokenize the expression
 function tokenizeExpression(expression) {
+
+
+
+    expression = expression.replace(/(\d+)\(/g, "$1*(");
+    expression = expression.replace(/\)(\d+)/g, ")*$1");
+    expression = expression.replace(/(\d+)([a-zA-Z])/g, "$1*$2");
+
     let tokens = expression.match(/(\d+\.?\d*|\.\d+|[+\-*/()])/g);
     if (!tokens) throw new Error("Invalid expression");
     return tokens;
