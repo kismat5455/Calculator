@@ -1,6 +1,6 @@
 // Variables to store the full expression and display reset flag
-let expression = "";//store the expression
-let shouldResetDisplay = false;//flag to reset the display
+let expression = ""; // Store the expression
+let shouldResetDisplay = false; // Flag to reset the display
 
 // Event listener for button clicks
 document.getElementById("calculatorContainer").addEventListener("click", function (event) {
@@ -14,10 +14,8 @@ document.addEventListener("keydown", function (event) {
     const key = event.key;
     const validKeys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "+", "-", "*", "/", "Enter", "Backspace", "Delete", "(", ")"];
 
-
     if (validKeys.includes(key)) {
         if (key === "Enter") {
-
             handleInput("=");
         } else if (key === "Backspace" || key === "Delete") {
             handleInput("Del");
@@ -32,7 +30,6 @@ function handleInput(value) {
     let display = document.getElementById("inputField");
 
     if (value === "Clear") {
-
         clearDisplay(display);
     } else if (display.value !== "Error") {
         if (value === "Del") {
@@ -46,8 +43,8 @@ function handleInput(value) {
 // Function to clear the display
 function clearDisplay(display) {
     display.value = "0";
-    expression = "";       // Reset the expression
-    shouldResetDisplay = false; // Reset the flag
+    expression = "";
+    shouldResetDisplay = false;
 }
 
 // Function to handle button clicks
@@ -84,6 +81,10 @@ function handleOperatorClick(value, display) {
 
 // Custom function to evaluate mathematical expression
 function evaluateExpression(expression) {
+    if (containsMultipleDecimals(expression) || hasInvalidDecimalPlacement(expression)) {
+        throw new Error("Invalid expression");
+    }
+
     try {
         let tokens = tokenizeExpression(expression);
         let postfix = infixToPostfix(tokens);
@@ -95,9 +96,6 @@ function evaluateExpression(expression) {
 
 // Function to tokenize the expression
 function tokenizeExpression(expression) {
-
-
-
     expression = expression.replace(/(\d+)\(/g, "$1*(");
     expression = expression.replace(/\)(\d+)/g, ")*$1");
     expression = expression.replace(/(\d+)([a-zA-Z])/g, "$1*$2");
@@ -193,12 +191,20 @@ function evaluatePostfix(postfix) {
 
 // Function to handle equals button click
 function handleEqualsClick(display) {
-    let result = evaluateExpression(expression);
-    if (!isNaN(result)) {
-        display.value = result;
-        expression = result.toString();
-        shouldResetDisplay = true;
-    } else {
+    try {
+        let result = evaluateExpression(expression);
+        if (result === "you funny? Cannot divide by zero.") {
+            display.value = result;
+            expression = "";
+        } else if (!isNaN(result)) {
+            display.value = result;
+            expression = result.toString();
+            shouldResetDisplay = true;
+        } else {
+            display.value = "Error";
+            expression = "";
+        }
+    } catch (error) {
         display.value = "Error";
         expression = "";
     }
@@ -220,6 +226,17 @@ function isOperator(value) {
 // Function to check if the argument is a number
 function isNumber(value) {
     return !isNaN(value);
+}
+
+// Function to check if a value contains multiple decimals
+function containsMultipleDecimals(value) {
+    const parts = value.split(/[\+\-\*\/]/);
+    return parts.some(part => (part.split(".").length - 1) > 1);
+}
+
+// Function to check for invalid decimal placement
+function hasInvalidDecimalPlacement(value) {
+    return value.split(/[\+\-\*\/]/).some(part => part.startsWith(".") || part.endsWith("."));
 }
 
 // Function to update the expression display

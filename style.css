@@ -4,6 +4,14 @@
     box-sizing: border-box;
 }
 
+body {
+    background-image: url('images/picture');
+    background-size: auto;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed
+}
+
 /* Title Styles */
 #titleName {
     text-align: center;
@@ -16,20 +24,23 @@
 /* Calculator Display Styles */
 #calculatorContainer {
     width: 350px;
-    height: 350px;
+    height: fit-content;
     margin: 0 auto;
     padding: 20px;
-    border: 1px solid #000;
+    border: 2px solid #000;
     border-radius: 10px;
     background-color: #f4f4f4;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    background: radial-gradient(circle, rgba(242, 242, 242, 1) 0%, rgba(219, 50, 50, 1) 100%);
+    border: 2px solid #000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
-
-
 
 #row1,
 #row2,
@@ -43,22 +54,33 @@
     display: flex;
 }
 
+
 .button {
     flex: auto;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: bold;
-    background-color: #1d7152;
+    background-color: #9f310c;
+    /* Green */
     color: #fff;
     border: none;
     border-radius: 5px;
-    padding: 10px;
+    padding: 15px;
     margin: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.3s;
+
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    color: #fff;
 }
 
 .button:hover {
-    background-color: #000a07cc;
+    background-color: #ff4500;
+    transform: scale(1.1);
+}
+
+.button:active {
+    background-color: #d00000;
+    transform: scale(0.95);
 }
 
 footer {
